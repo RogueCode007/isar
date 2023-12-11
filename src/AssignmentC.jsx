@@ -31,10 +31,10 @@ export default function AssignmentC() {
           </li>
         </ul>
         <div className="mt-4 flex flex-col gap-4 md:flex-row md:justify-between">
-          <Button as={Link} to={`assignmentA`} colorScheme="teal">
+          <Button as={Link} to={`/`} colorScheme="teal">
             Go to AssignmentA
           </Button>
-          <Button as={Link} to={`assignmentB`} colorScheme="teal">
+          <Button as={Link} to={`/assignmentB`} colorScheme="teal">
             Go to Assignment B
           </Button>
         </div>
