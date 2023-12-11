@@ -5,7 +5,6 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
   Text,
   Button,
 } from "@chakra-ui/react";
@@ -35,7 +34,9 @@ export function OverlayModal({ isOpen, onClose, onAction }) {
             </Text>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={onAction}>Take Action</Button>
+            <Button onClick={onAction} colorScheme="teal">
+              Take Action
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

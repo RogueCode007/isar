@@ -1,13 +1,16 @@
 import { apiRoutes } from "./core/routes/apiRoutes";
 import { Link } from "react-router-dom";
 import { useWebSocket } from "./core/hooks/useWebSocket";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OverlayModal } from "./core/components/OverlayModal";
+import { ArrowUp, ArrowDown } from "iconsax-react";
+import { Button } from "@chakra-ui/react";
 
 export default function AssignmentB() {
   const { data, isActionRequired, actOnSpectrum } = useWebSocket(
     apiRoutes.webSocket
   );
+  const prevDataRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -16,20 +19,27 @@ export default function AssignmentB() {
     }
   }, [isActionRequired]);
 
-  const renderDataProperties = () => {
-    if (!data) return null;
+  useEffect(() => {
+    prevDataRef.current = data;
+  }, [data]);
 
-    return Object.keys(data).map((key) => (
-      <p key={key}>
-        {key}: {renderValue(data[key])}
-      </p>
-    ));
-  };
-  const renderValue = (value) => {
-    if (typeof value === "boolean") {
-      return value ? "true" : "false";
+  const renderValueWithIcon = (currentValue, prevValue) => {
+    if (currentValue > prevValue) {
+      return (
+        <span className="font-semibold">
+          {currentValue}{" "}
+          <ArrowUp className="inline" color="green" variant="Bulk" size={20} />
+        </span>
+      );
+    } else if (currentValue < prevValue) {
+      return (
+        <span className="font-semibold">
+          {currentValue}{" "}
+          <ArrowDown className="inline" color="red" variant="Bulk" size={20} />
+        </span>
+      );
     }
-    return value;
+    return <span className="font-semibold">{currentValue}</span>;
   };
   const closeModal = () => {
     setShowModal(false);
@@ -43,7 +53,45 @@ export default function AssignmentB() {
     <div className="h-full w-full bg-black pt-12 px-4">
       {data && (
         <div className="bg-white rounded-lg p-3 md:max-w-[400px] md:mx-auto">
-          {renderDataProperties()}
+          <div className="mb-4">
+            <p className="flex items-center gap-2 font-semibold">
+              <span>🌡️ Temperature: </span>
+            </p>
+            {renderValueWithIcon(
+              data.Temperature,
+              prevDataRef.current?.Temperature
+            )}
+          </div>
+          <div className="mb-4">
+            <p className="flex items-center gap-2 font-semibold">
+              <span>🚀 Velocity: </span>
+            </p>
+            {renderValueWithIcon(data.Velocity, prevDataRef.current?.Velocity)}
+          </div>
+          <div className="mb-4">
+            <p className="flex items-center gap-2 font-semibold">
+              <span>🏳️ Altitude: </span>
+            </p>
+            {renderValueWithIcon(data.Altitude, prevDataRef.current?.Altitude)}
+          </div>
+          <div className="mb-4">
+            <p className="flex items-center gap-2 font-semibold">
+              <span>💬 Message: </span>
+            </p>
+            <span className="font-semibold">{data.StatusMessage}</span>
+          </div>
+          <div className="mb-4">
+            <p className="flex items-center gap-2 font-semibold">
+              <span>⚠️ Flight Status: </span>
+            </p>
+            <span
+              className={`font-semibold ${
+                data.IsAscending ? "text-green-500" : "text-red-500"
+              }`}
+            >
+              {data.IsAscending ? "Ascending" : "Descending"}
+            </span>
+          </div>
 
           {showModal && (
             <OverlayModal
@@ -53,13 +101,13 @@ export default function AssignmentB() {
             />
           )}
 
-          <div className="mt-4 flex justify-between">
-            <Link to={`/`} className="mt-4 block bg-teal-500 p-2 rounded-lg">
+          <div className="mt-4 flex flex-col gap-4 md:flex-row md:justify-between">
+            <Button as={Link} to={`/`} colorScheme="teal">
               Go to Assignment A
-            </Link>
-            <Link to={`/`} className="mt-4 block bg-teal-500 p-2 rounded-lg">
+            </Button>
+            <Button as={Link} to={`/assignmentC`} colorScheme="teal">
               Go to Assignment C
-            </Link>
+            </Button>
           </div>
         </div>
       )}
